@@ -1,0 +1,83 @@
+# Node modules
+node_modules/
+.pnp/
+.pnp.js
+
+# Logs
+logs/
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# Runtime / process files
+pids/
+*.pid
+*.seed
+*.pid.lock
+hs_err_pid*
+
+# Build / output
+dist/
+build/
+tmp/
+temp/
+.cache/
+.nyc_output/
+coverage/
+coverage-*
+
+# Environment / secrets
+.env
+.env.*.local
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+# TypeScript
+*.tsbuildinfo
+
+# Editor / OS files
+.vscode/
+.idea/
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.swp
+*.DS_Store
+Thumbs.db
+desktop.ini
+
+# Database / data files
+*.sqlite
+*.sqlite3
+dump.rdb
+*.db
+uploads/
+
+# Docker / Compose local overrides
+docker-compose.override.yml
+docker-compose.*.local.yml
+
+# Certificates / keys
+*.pem
+*.key
+*.crt
+*.p12
+
+# Misc / caches
+*.bak
+*.tmp
+*.old
+*.orig
+.cache-loader/
+.eslintcache
+
+# Test / CI artifacts
+coverage/
+jest-cache/
+test-results/
+.vitest/

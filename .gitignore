@@ -1,0 +1,80 @@
+# Ignore Git specific files
+# Ignore all dotfiles
+.*
+
+# But don't ignore these important ones
+!.gitignore
+!.env.example
+!.editorconfig
+
+# .git/
+# .gitignore
+# .gitattributes
+
+
+node_modules/
+.pnpm-store/
+
+# Ignore IDE/editor specific files
+.vscode/
+
+# Ignore backend specifics
+kl-backend/node_modules/
+kl-backend/dist/
+kl-backend/.env
+kl-backend/.env.*
+kl-backend/npm-debug.log*
+kl-backend/yarn-debug.log*
+kl-backend/yarn-error.log*
+kl-backend/pnpm-debug.log*
+kl-backend/coverage/
+kl-backend/tmp/
+kl-backend/uploads/
+kl-backend/*.tsbuildinfo
+kl-backend/.vscode/
+
+# Ignore frontend specifics
+kl-frontend/node_modules/
+kl-frontend/dist/
+kl-frontend/.env
+kl-frontend/.env.*
+kl-frontend/npm-debug.log*
+kl-frontend/yarn-debug.log*
+kl-frontend/yarn-error.log*
+kl-frontend/pnpm-debug.log*
+kl-frontend/coverage/
+kl-frontend/tmp/
+kl-frontend/.vite/
+kl-frontend/*.tsbuildinfo
+kl-frontend/uploads/
+
+# Ignore OS specific files
+.DS_Store
+Thumbs.db
+
+# Root/local environment and build artifacts
+.env
+.env.*
+*.local
+*.log
+logs/
+uploads/
+dist/
+build/
+coverage/
+*.tsbuildinfo
+
+# Editor/IDE
+.vscode/
+.idea/
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.iml
+
+# Cache / tooling
+.cache/
+.turbo/
+.vite/
+node-build.ts

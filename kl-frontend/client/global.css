@@ -1,0 +1,189 @@
+@import url("https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap");
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  /**
+   * Kiya Lottery Design System
+   * All color variables are expressed as HSL values for consistency with Tailwind CSS.
+   */
+  :root {
+    /* Kiya Lottery Color Palette */
+    --kiya-dark: 263 60% 12%; /* #1a133b - dark indigo */
+    --kiya-surface: 263 60% 18%; /* #241a47 - indigo surface */
+    --kiya-text: 0 0% 100%; /* #FFFFFF */
+    --kiya-text-secondary: 263 30% 70%; /* #b3a6d6 - indigo secondary */
+    --kiya-primary: 263 100% 50%; /* #6c2bd7 - vibrant indigo */
+    --kiya-primary-dark: 263 100% 35%; /* #4b1a99 - dark indigo */
+    --kiya-teal: 263 100% 60%; /* #a763ff - purple accent */
+    --kiya-teal-light: 263 52% 80%; /* #d1b3ff - light purple */
+    --kiya-red: 359 96% 47%; /* #e90305 - secondary-red */
+    --kiya-green: 117 100% 34%; /* #1fad00 - secondary-green */
+    --kiya-warning: 44 100% 50%; /* #FFAB00 */
+
+    /* Design System Variables */
+    --radius: 0.5rem;
+    --page-padding: 1rem;
+    --card-margin: 1.5rem;
+    --internal-padding: 1rem;
+    --button-padding: 0.75rem;
+
+    /* Base theme variables for compatibility */
+    --background: var(--kiya-dark);
+    --foreground: var(--kiya-text);
+    --card: var(--kiya-surface);
+    --card-foreground: var(--kiya-text);
+    --popover: var(--kiya-surface);
+    --popover-foreground: var(--kiya-text);
+    --primary: var(--kiya-primary);
+    --primary-foreground: var(--kiya-text);
+    --secondary: var(--kiya-surface);
+    --secondary-foreground: var(--kiya-text);
+    --muted: var(--kiya-surface);
+    --muted-foreground: var(--kiya-text-secondary);
+    --accent: var(--kiya-teal);
+    --accent-foreground: var(--kiya-text);
+    --destructive: var(--kiya-red);
+    --destructive-foreground: var(--kiya-text);
+    --border: 0 0% 20%;
+    --input: 0 0% 20%;
+    --ring: var(--kiya-teal);
+  }
+
+  .light {
+    /* Light theme for Kiya Lottery */
+    --kiya-dark: 0 0% 98%; /* Light background */
+    --kiya-surface: 0 0% 95%; /* Light surface */
+    --kiya-text: 0 0% 9%; /* Dark text */
+    --kiya-text-secondary: 0 0% 45%; /* Secondary text */
+    --kiya-primary: 269 100% 26%; /* #490085 - primary-light */
+    --kiya-primary-dark: 263 100% 69%; /* #a763ff - primary-dark */
+    --kiya-teal: 174 100% 37%; /* #00BFA5 - same teal */
+    --kiya-teal-light: 174 52% 60%; /* #4DB6AC - same teal light */
+    --kiya-red: 359 96% 47%; /* #e90305 - secondary-red */
+    --kiya-green: 117 100% 34%; /* #1fad00 - secondary-green */
+    --kiya-warning: 44 100% 50%; /* #FFAB00 - same warning */
+
+    /* Update base theme variables */
+    --background: var(--kiya-dark);
+    --foreground: var(--kiya-text);
+    --card: var(--kiya-surface);
+    --card-foreground: var(--kiya-text);
+    --popover: var(--kiya-surface);
+    --popover-foreground: var(--kiya-text);
+    --border: 0 0% 85%;
+    --input: 0 0% 90%;
+  }
+
+  .dark {
+    /* Maintain dark theme as default */
+    --kiya-dark: 0 0% 7%; /* #121212 */
+    --kiya-surface: 0 0% 12%; /* #1E1E1E */
+    --kiya-text: 0 0% 100%; /* #FFFFFF */
+    --kiya-text-secondary: 0 0% 70%; /* #B3B3B3 */
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+
+  html {
+    font-family:
+      "Inter",
+      ui-sans-serif,
+      system-ui,
+      -apple-system,
+      sans-serif;
+  }
+
+  body {
+    @apply bg-kiya-dark text-kiya-text font-inter;
+    @apply antialiased;
+    min-height: 100vh;
+    min-height: 100dvh;
+  }
+
+  /* Mobile-first responsive typography */
+  h1 {
+    @apply text-page-title font-semibold;
+  }
+
+  h2 {
+    @apply text-section-heading font-semibold;
+  }
+
+  h3 {
+    @apply text-card-title font-medium;
+  }
+
+  p {
+    @apply text-body;
+  }
+
+  /* Custom scrollbar for webkit browsers */
+  ::-webkit-scrollbar {
+    width: 6px;
+  }
+
+  ::-webkit-scrollbar-track {
+    @apply bg-kiya-dark;
+  }
+
+  ::-webkit-scrollbar-thumb {
+    @apply bg-kiya-text-secondary rounded-full;
+  }
+
+  ::-webkit-scrollbar-thumb:hover {
+    @apply bg-kiya-teal;
+  }
+
+  /* Focus styles for accessibility */
+  *:focus-visible {
+    @apply outline-none ring-2 ring-kiya-teal ring-offset-2 ring-offset-kiya-dark;
+  }
+
+  /* Safe area for mobile devices */
+  .safe-area {
+    padding-bottom: env(safe-area-inset-bottom);
+    padding-left: env(safe-area-inset-left);
+    padding-right: env(safe-area-inset-right);
+  }
+
+  .safe-area-top {
+    padding-top: env(safe-area-inset-top);
+  }
+}
+
+@layer components {
+  /* Common layout patterns */
+  .page-container {
+    @apply px-4 pb-20 safe-area;
+    min-height: calc(100vh - env(safe-area-inset-top));
+    min-height: calc(100dvh - env(safe-area-inset-top));
+  }
+
+  .card-base {
+    @apply bg-kiya-surface rounded-lg p-4 border border-kiya-surface;
+  }
+
+  .button-base {
+    @apply px-4 py-3 rounded-lg font-medium text-button transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-kiya-dark;
+  }
+
+  .input-base {
+    @apply w-full px-3 py-3 bg-kiya-surface border border-gray-600 rounded-lg text-kiya-text placeholder-kiya-text-secondary focus:border-kiya-teal focus:ring-1 focus:ring-kiya-teal transition-colors;
+  }
+
+  /* Grid layouts */
+  .ticket-grid {
+    @apply grid grid-cols-5 gap-2 sm:grid-cols-8 md:grid-cols-10;
+  }
+
+  /* Animation utilities */
+  .animate-press {
+    @apply transform active:scale-95 transition-transform duration-100;
+  }
+}

@@ -1,0 +1,25 @@
+# Node modules
+node_modules/
+
+# Environment / secrets
+.env
+.env.*.local
+
+# Bot runtime data (persisted users etc.)
+data/
+
+# Logs
+logs/
+*.log
+npm-debug.log*
+pnpm-debug.log*
+
+# Build / output
+dist/
+coverage/
+
+# Editor / OS
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db

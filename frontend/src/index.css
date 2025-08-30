@@ -1,0 +1,278 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  font-family: Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;
+  line-height: 1.5;
+  font-weight: 400;
+}
+
+body {
+  margin: 0;
+  min-width: 320px;
+  min-height: 100vh;
+}
+
+/* Prevent horizontal scrolling */
+html, body {
+  overflow-x: hidden;
+}
+
+/* Smooth scrolling */
+html {
+  scroll-behavior: smooth;
+}
+
+/* Custom scrollbar for webkit browsers */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: hsl(var(--border));
+  border-radius: 3px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: hsl(var(--muted-foreground));
+}
+
+/* Line clamp utility */
+.line-clamp-2 {
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+/* Container responsive utility */
+.container-responsive {
+  @apply w-full max-w-none px-4 sm:px-6 lg:px-8;
+}
+
+/* Prevent content shift during sidebar transitions */
+.sidebar-transition {
+  transition: margin-left 300ms ease-in-out, margin-right 300ms ease-in-out;
+}
+
+/* Ensure proper z-index stacking */
+.z-header { z-index: 50; }
+.z-sidebar { z-index: 30; }
+.z-overlay { z-index: 40; }
+.z-modal { z-index: 60; }
+
+/* Responsive card grid system */
+.six-card-grid {
+  display: grid;
+  width: 100%;
+  gap: 0.75rem;
+  
+  /* Mobile: 2 columns (3 rows) */
+  grid-template-columns: repeat(2, 1fr);
+}
+
+@media (min-width: 640px) {
+  .six-card-grid {
+    gap: 1rem;
+    /* Small tablets: 3 columns (2 rows) */
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+@media (min-width: 1280px) {
+  .six-card-grid {
+    gap: 1.5rem;
+    /* Large screens: 6 columns (1 row) */
+    grid-template-columns: repeat(6, 1fr);
+  }
+}
+
+/* Card aspect ratio and sizing */
+.card-responsive {
+  aspect-ratio: auto;
+  min-height: 120px;
+  width: 100%;
+}
+
+@media (min-width: 640px) {
+  .card-responsive {
+    min-height: 140px;
+  }
+}
+
+@media (min-width: 1280px) {
+  .card-responsive {
+    min-height: 130px;
+    max-height: 160px;
+  }
+}
+
+/* Icon responsive sizing */
+.icon-responsive {
+  /* Base size for mobile */
+  height: 1.25rem;
+  width: 1.25rem;
+}
+
+@media (min-width: 768px) {
+  .icon-responsive {
+    /* 25% smaller for larger screens */
+    height: 1rem;
+    width: 1rem;
+  }
+}
+
+@media (min-width: 1280px) {
+  .icon-responsive {
+    /* Slightly larger for very large screens */
+    height: 1.25rem;
+    width: 1.25rem;
+  }
+}
+
+/* Typography responsive utilities */
+.text-responsive-sm {
+  @apply text-xs sm:text-sm;
+}
+
+.text-responsive-base {
+  @apply text-sm sm:text-base;
+}
+
+.text-responsive-lg {
+  @apply text-base sm:text-lg;
+}
+
+.text-responsive-xl {
+  @apply text-lg sm:text-xl;
+}
+
+.text-responsive-2xl {
+  @apply text-xl sm:text-2xl;
+}
+
+.text-responsive-3xl {
+  @apply text-2xl sm:text-3xl;
+}
+
+/* Spacing utilities for consistent card layouts */
+.card-padding {
+  @apply p-4 sm:p-5 lg:p-6;
+}
+
+.card-gap {
+  @apply gap-3 sm:gap-4 lg:gap-6;
+}
+
+/* Grid utilities for exact 6-card layout */
+.grid-6-responsive {
+  @apply grid w-full;
+  @apply grid-cols-2 gap-3;
+  @apply sm:grid-cols-3 sm:gap-4;
+  @apply xl:grid-cols-6 xl:gap-6;
+}
+
+@layer base {
+  :root {
+    --background: 0 0% 100%;
+    --foreground: 0 0% 3.9%;
+    --card: 0 0% 100%;
+    --card-foreground: 0 0% 3.9%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 0 0% 3.9%;
+    --primary: 0 0% 9%;
+    --primary-foreground: 0 0% 98%;
+    --secondary: 0 0% 96.1%;
+    --secondary-foreground: 0 0% 9%;
+    --muted: 0 0% 96.1%;
+    --muted-foreground: 0 0% 45.1%;
+    --accent: 0 0% 96.1%;
+    --accent-foreground: 0 0% 9%;
+    --destructive: 0 84.2% 60.2%;
+    --destructive-foreground: 0 0% 98%;
+    --border: 0 0% 89.8%;
+    --input: 0 0% 89.8%;
+    --ring: 0 0% 3.9%;
+    --chart-1: 12 76% 61%;
+    --chart-2: 173 58% 39%;
+    --chart-3: 197 37% 24%;
+    --chart-4: 43 74% 66%;
+    --chart-5: 27 87% 67%;
+    --radius: 0.5rem;
+  }
+
+  .dark {
+    --background: 0 0% 3.9%;
+    --foreground: 0 0% 98%;
+    --card: 0 0% 3.9%;
+    --card-foreground: 0 0% 98%;
+    --popover: 0 0% 3.9%;
+    --popover-foreground: 0 0% 98%;
+    --primary: 0 0% 98%;
+    --primary-foreground: 0 0% 9%;
+    --secondary: 0 0% 14.9%;
+    --secondary-foreground: 0 0% 98%;
+    --muted: 0 0% 14.9%;
+    --muted-foreground: 0 0% 63.9%;
+    --accent: 0 0% 14.9%;
+    --accent-foreground: 0 0% 98%;
+    --destructive: 0 62.8% 30.6%;
+    --destructive-foreground: 0 0% 98%;
+    --border: 0 0% 14.9%;
+    --input: 0 0% 14.9%;
+    --ring: 0 0% 83.1%;
+    --chart-1: 220 70% 50%;
+    --chart-2: 160 60% 45%;
+    --chart-3: 30 80% 55%;
+    --chart-4: 280 65% 60%;
+    --chart-5: 340 75% 55%;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+  body {
+    @apply bg-background text-foreground;
+  }
+}
+
+/* Animation improvements */
+@layer utilities {
+  .animate-in {
+    animation: animate-in 0.2s ease-out;
+  }
+  
+  .animate-out {
+    animation: animate-out 0.2s ease-in;
+  }
+}
+
+@keyframes animate-in {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes animate-out {
+  from {
+    opacity: 1;
+    transform: translateY(0);
+  }
+  to {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+}
