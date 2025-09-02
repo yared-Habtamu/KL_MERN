@@ -16,6 +16,12 @@ const router = Router();
 
 import { validateBody } from "../middleware/validate";
 import { createLotterySchema, buyTicketsSchema } from "../schemas/lottery";
+import multer from "multer";
+
+const upload = multer({
+  storage: multer.memoryStorage(),
+  limits: { fieldSize: 10 * 1024 * 1024, fileSize: 5 * 1024 * 1024 },
+});
 router.get("/", listLotteries);
 router.get("/:id", getLottery);
 // restricted to agent/admin
@@ -23,7 +29,8 @@ router.post(
   "/",
   requireAuth,
   requireRole("agent", "admin"),
-  validateBody(createLotterySchema),
+  // accept multipart/form-data with prizeFiles[]; controller will handle body validation
+  upload.array("prizeFiles"),
   createLottery
 );
 router.put("/:id", requireAuth, requireRole("agent", "admin"), updateLottery);

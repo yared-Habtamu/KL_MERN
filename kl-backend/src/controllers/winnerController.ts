@@ -19,10 +19,19 @@ export async function registerWinners(req: AuthedRequest, res: Response) {
   if (!lottery) return res.status(404).json({ error: "Not found" });
 
   // only allow registration when lottery status is ended (draw completed)
-  if (!(lottery.status === "ended")) {
-    return res
-      .status(400)
-      .json({ error: "Winners can only be registered after the draw" });
+  // require status === 'ended' and all tickets sold
+  // use documented fields (ticketCount / ticketsSold) but tolerate legacy names via any cast
+  const sold = Number(
+    (lottery as any).ticketsSold ?? (lottery as any).soldTickets ?? 0
+  );
+  const total = Number(
+    (lottery as any).ticketCount ?? (lottery as any).totalTickets ?? 0
+  );
+  if (!(lottery.status === "ended" && total > 0 && sold >= total)) {
+    return res.status(400).json({
+      error:
+        "Winners can only be registered after the draw has ended and all tickets are sold",
+    });
   }
 
   // if requester is an agent, ensure they are the lottery creator

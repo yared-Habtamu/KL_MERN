@@ -79,12 +79,18 @@ export async function reviewDeposit(req: Request, res: Response) {
   // approve: handle both deposit and withdraw via applyTransaction
   try {
     if (tx.type === "deposit") {
+      console.log(
+        `reviewDeposit: approving tx=${id} type=${tx.type} amount=${tx.amount} user=${tx.userId}`
+      );
       const result = await applyTransaction({
         userId: String(tx.userId),
         type: "deposit",
         amount: tx.amount || 0,
         existingTxId: String(tx._id),
       });
+      console.log(
+        `reviewDeposit: applyTransaction result for tx=${id} -> balance=${result.balance} txId=${result.transaction?._id}`
+      );
       return res.json({
         ok: true,
         transaction: result.transaction,

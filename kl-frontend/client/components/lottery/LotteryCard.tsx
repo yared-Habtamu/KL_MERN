@@ -27,8 +27,9 @@ export const LotteryCard: React.FC<LotteryCardProps> = ({
       : null;
   const allTicketsSold =
     totalTickets != null ? (soldTickets ?? 0) >= totalTickets : false;
-  const isCompleted =
-    String(lottery?.status || "").toLowerCase() === "completed";
+  const statusLower = String(lottery?.status || "").toLowerCase();
+  const isActive = statusLower === "active" || statusLower === "open";
+  const isEnded = statusLower === "ended" || statusLower === "completed";
 
   const statusColors = {
     active: "text-kiya-green",
@@ -156,18 +157,17 @@ export const LotteryCard: React.FC<LotteryCardProps> = ({
         {/* Actions */}
         {showActions && (
           <div className="flex space-x-2 pt-2">
-            {(["active", "open"].includes(String(lottery.status)) as boolean) &&
-              !allTicketsSold && (
-                <Button variant="primary" size="full" onClick={onViewDetails}>
-                  Buy Tickets
-                </Button>
-              )}
-            {(isCompleted || allTicketsSold) && (
+            {isActive && !allTicketsSold && (
+              <Button variant="primary" size="full" onClick={onViewDetails}>
+                Buy Tickets
+              </Button>
+            )}
+            {isEnded && allTicketsSold && (
               <Button variant="outline" size="full" onClick={onViewDetails}>
                 View Results
               </Button>
             )}
-            {lottery.status === "upcoming" && (
+            {statusLower === "upcoming" && (
               <Button variant="outline" size="full" onClick={onViewDetails}>
                 View Details
               </Button>

@@ -327,8 +327,10 @@ export const generateTicketAvailability = (
   return soldMap;
 };
 
-export const formatCurrency = (amount: number): string => {
-  return `${amount.toFixed(2)} ETB`;
+export const formatCurrency = (amount?: number): string => {
+  const n = Number(amount);
+  const safe = Number.isFinite(n) ? n : 0;
+  return `${safe.toFixed(2)} ETB`;
 };
 
 export const formatDate = (dateString: string): string => {

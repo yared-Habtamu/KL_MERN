@@ -17,9 +17,6 @@ interface LotteryFormData {
   description: string;
   ticketPrice: string;
   totalTickets: string;
-  startDate: string;
-  endDate: string;
-  drawDate: string;
 }
 
 interface PrizeForm {
@@ -41,9 +38,6 @@ const CreateLotteryScreen: React.FC = () => {
     description: "",
     ticketPrice: "",
     totalTickets: "",
-    startDate: "",
-    endDate: "",
-    drawDate: "",
   });
 
   const [prizes, setPrizes] = useState<PrizeForm[]>([
@@ -63,6 +57,12 @@ const CreateLotteryScreen: React.FC = () => {
   const netRevenue = maxRevenue - commission;
 
   const handleInputChange = (field: keyof LotteryFormData, value: string) => {
+    // sanitize totalTickets to integer string to avoid accidental decimals or negative values
+    if (field === "totalTickets") {
+      const n = Math.max(0, Math.floor(Number(value) || 0));
+      setFormData((prev) => ({ ...prev, [field]: String(n) }));
+      return;
+    }
     setFormData((prev) => ({ ...prev, [field]: value }));
   };
 
@@ -129,19 +129,7 @@ const CreateLotteryScreen: React.FC = () => {
       errors.push("Valid ticket price is required");
     if (!formData.totalTickets || totalTickets <= 0)
       errors.push("Valid total tickets is required");
-    if (!formData.startDate) errors.push("Start date is required");
-    if (!formData.endDate) errors.push("End date is required");
-    if (!formData.drawDate) errors.push("Draw date is required");
-
-    // Date validations
-    const startDate = new Date(formData.startDate);
-    const endDate = new Date(formData.endDate);
-    const drawDate = new Date(formData.drawDate);
-    const now = new Date();
-
-    if (startDate < now) errors.push("Start date must be in the future");
-    if (endDate <= startDate) errors.push("End date must be after start date");
-    if (drawDate <= endDate) errors.push("Draw date must be after end date");
+    // Removed schedule/date requirements: the system will mark lottery ended automatically
 
     // Prize validations
     const activePrizes = prizes.slice(0, prizeCount);
@@ -168,20 +156,52 @@ const CreateLotteryScreen: React.FC = () => {
 
     setIsSubmitting(true);
     try {
-      const payload = {
-        title: formData.title,
-        description: formData.description,
-        ticketPrice: Number(formData.ticketPrice),
-        totalTickets: Number(formData.totalTickets),
-        drawDate: formData.drawDate,
-        prizes: prizes.slice(0, prizeCount).map((p) => ({
+      // ensure ticketCount is an integer
+      const ticketCount = Math.max(
+        0,
+        Math.floor(Number(formData.totalTickets) || 0),
+      );
+
+      const prizeInputs = prizes.slice(0, prizeCount);
+      // If any prize has a File, build multipart/form-data
+      const hasFiles = prizeInputs.some((p) => p.image instanceof File);
+
+      let resp: any = null;
+      if (hasFiles) {
+        const fd = new FormData();
+        fd.append("title", formData.title);
+        fd.append("description", formData.description);
+        fd.append("ticketPrice", String(Number(formData.ticketPrice)));
+        fd.append("ticketCount", String(ticketCount));
+        // append prizes metadata and files
+        prizeInputs.forEach((p, idx) => {
+          fd.append(`prizes[${idx}][rank]`, String(p.rank));
+          fd.append(`prizes[${idx}][name]`, p.name || "");
+          fd.append(`prizes[${idx}][description]`, p.description || "");
+          if (p.image instanceof File) {
+            // send file under prizesFiles[] aligned by index
+            fd.append("prizeFiles", p.image, p.image.name || `prize-${idx}`);
+            // also include a pointer so server can correlate if needed
+            fd.append(`prizes[${idx}][hasFile]`, "1");
+          }
+        });
+        resp = await lotteries.create(fd);
+      } else {
+        const normalizedPrizes = prizeInputs.map((p) => ({
           id: String(p.rank),
           rank: p.rank,
           name: p.name,
           description: p.description,
-        })),
-      } as any;
-      const resp = await lotteries.create(payload);
+        }));
+        const payload = {
+          title: formData.title,
+          description: formData.description,
+          ticketPrice: Number(formData.ticketPrice),
+          ticketCount,
+          prizes: normalizedPrizes,
+        } as any;
+        resp = await lotteries.create(payload);
+      }
       addToast({
         type: "success",
         title: "Lottery Created",
@@ -382,40 +402,7 @@ const CreateLotteryScreen: React.FC = () => {
           </div>
         </Card>
 
-        {/* Schedule */}
-        <Card>
-          <h2 className="text-lg font-semibold text-kiya-text mb-4">
-            Schedule
-          </h2>
-          <div className="space-y-4">
-            <div className="grid grid-cols-2 gap-4">
-              <InputField
-                label="Start Date"
-                type="date"
-                value={formData.startDate}
-                onChange={(e) => handleInputChange("startDate", e.target.value)}
-                min={today}
-              />
-
-              <InputField
-                label="End Date"
-                type="date"
-                value={formData.endDate}
-                onChange={(e) => handleInputChange("endDate", e.target.value)}
-                min={formData.startDate || today}
-              />
-            </div>
-
-            <InputField
-              label="Draw Date"
-              type="date"
-              value={formData.drawDate}
-              onChange={(e) => handleInputChange("drawDate", e.target.value)}
-              min={formData.endDate || today}
-              helperText="Winners will be announced on this date"
-            />
-          </div>
-        </Card>
+        {/* Schedule removed: end/draw dates handled automatically when tickets sold */}
 
         {/* Financial Summary */}
         <Card className="bg-gradient-to-r from-kiya-primary/5 to-kiya-teal/5 border-kiya-primary/20">
@@ -526,22 +513,7 @@ const CreateLotteryScreen: React.FC = () => {
               <span className="text-kiya-text-secondary">Total Tickets:</span>
               <p className="font-medium text-kiya-text">{totalTickets}</p>
             </div>
-            <div>
-              <span className="text-kiya-text-secondary">Start Date:</span>
-              <p className="font-medium text-kiya-text">
-                {formData.startDate
-                  ? new Date(formData.startDate).toLocaleDateString()
-                  : "Not set"}
-              </p>
-            </div>
-            <div>
-              <span className="text-kiya-text-secondary">Draw Date:</span>
-              <p className="font-medium text-kiya-text">
-                {formData.drawDate
-                  ? new Date(formData.drawDate).toLocaleDateString()
-                  : "Not set"}
-              </p>
-            </div>
+            {/* Dates are auto-managed by the system when tickets sell out */}
           </div>
 
           <div>

@@ -52,7 +52,7 @@ const LotteryManagementScreen: React.FC = () => {
 
   const [editableFields, setEditableFields] = useState<EditableFields>({
     drawDate: "",
-    drawPlace: "",
+  drawPlace: "",
   });
 
   const [lottery, setLottery] = useState<Lottery | null>(null);
@@ -84,17 +84,22 @@ const LotteryManagementScreen: React.FC = () => {
   // Initialize editable fields when lottery loads
   React.useEffect(() => {
     if (lottery) {
+      const drawDateStr = lottery.drawDate ? String(lottery.drawDate) : "";
       setEditableFields({
-        drawDate: lottery.drawDate.split("T")[0], // Extract date part
-        drawPlace: "Addis Ababa, Ethiopia", // Default draw place
+  drawDate: drawDateStr ? drawDateStr.split("T")[0] : "", // Extract date part if present
+  drawPlace: "Addis Ababa, Ethiopia", // Default draw place
+  // include existing tiktok link
+  ...(lottery.tiktokStreamLink ? { tiktokStreamLink: lottery.tiktokStreamLink } : {}),
       });
     }
   }, [lottery]);
 
   const allTicketsSold = lottery
-    ? lottery.soldTickets >= lottery.totalTickets
+    ? Number(lottery.soldTickets || 0) >= Number(lottery.totalTickets || 0)
     : false;
-  const canRegisterWinners = lottery?.status === "active" && allTicketsSold;
+  const statusLower = String(lottery?.status || "").toLowerCase();
+  // Show Register Winners only when status is exactly 'ended' and all tickets sold
+  const canRegisterWinners = statusLower === "ended" && allTicketsSold;
 
   if (!lottery) {
     return (
@@ -120,19 +125,29 @@ const LotteryManagementScreen: React.FC = () => {
     setShowEditModal(true);
   };
 
-  const handleSaveEdit = () => {
+  const handleSaveEdit = async () => {
     setIsSubmitting(true);
-
-    // Simulate API call
-    setTimeout(() => {
-      setIsSubmitting(false);
-      setShowEditModal(false);
+    try {
+      const api = await import("../lib/api");
+      await api.lotteries.update(lottery!.id, {
+        drawDate: editableFields.drawDate || lottery!.drawDate,
+        tiktokStreamLink: (editableFields as any).tiktokStreamLink || lottery!.tiktokStreamLink,
+      });
       addToast({
         type: "success",
         title: "Lottery Updated",
-        message: "Draw date and location have been updated successfully.",
+        message: "Draw date and TikTok link updated.",
       });
-    }, 1000);
+      // reload lottery
+      const refreshed = await (await import("../lib/api")).lotteries.get(lottery!.id);
+      setLottery(refreshed || lottery);
+    } catch (e) {
+      console.error("Failed to update lottery", e);
+      addToast({ type: "error", title: "Update failed", message: "Could not save changes" });
+    } finally {
+      setIsSubmitting(false);
+      setShowEditModal(false);
+    }
   };
 
   const handleRegisterWinners = () => {
@@ -351,7 +366,7 @@ const LotteryManagementScreen: React.FC = () => {
             )}
           </div>
 
-          {lottery.status === "completed" ? (
+          {(statusLower === "ended" || statusLower === "completed") ? (
             <div className="space-y-3">
               {lottery.prizes.map((prize, index) => (
                 <div
@@ -367,7 +382,7 @@ const LotteryManagementScreen: React.FC = () => {
                       {prize.name}
                     </p>
                     <p className="text-sm text-kiya-text-secondary">
-                      Winner: John Doe • Ticket #42 • +251911234567
+                      Winner: Abebe Kebede • Ticket #42 • +251911234567
                     </p>
                   </div>
                 </div>
@@ -447,6 +462,18 @@ const LotteryManagementScreen: React.FC = () => {
                 ...prev,
                 drawPlace: e.target.value,
               }))
+            }
+          />
+
+          <InputField
+            label="TikTok Stream Link"
+            placeholder="https://www.tiktok.com/..."
+            value={(editableFields as any).tiktokStreamLink || lottery?.tiktokStreamLink || ""}
+            onChange={(e) =>
+              setEditableFields((prev) => ({
+                ...(prev as any),
+                tiktokStreamLink: e.target.value,
+              } as any))
             }
           />
 

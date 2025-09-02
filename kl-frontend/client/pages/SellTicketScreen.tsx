@@ -141,8 +141,8 @@ const SellTicketScreen: React.FC = () => {
 
   const ticketAvailability = selectedLottery
     ? generateTicketAvailability(
-        selectedLottery.totalTickets,
-        selectedLottery.soldTickets,
+        Number(selectedLottery.totalTickets || 0),
+        Number(selectedLottery.soldTickets || 0),
       )
     : [];
 

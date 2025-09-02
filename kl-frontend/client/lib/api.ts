@@ -10,6 +10,12 @@ export function getToken() {
   return localStorage.getItem("kiya_token");
 }
 
+function normalizeStatus(s: string | undefined) {
+  const st = (s || "").toLowerCase();
+  if (st === "open") return "active";
+  return s || "";
+}
+
 async function request(path: string, opts: RequestInit = {}) {
   const headers: Record<string, string> = {
     "Content-Type": "application/json",
@@ -103,8 +109,37 @@ export const wallet = {
 };
 
 export const lotteries = {
-  create: (payload: any) =>
-    request("/lotteries", { method: "POST", body: JSON.stringify(payload) }),
+  create: (payload: any) => {
+    if (payload instanceof FormData) {
+      const token = getToken();
+      const headers: Record<string, string> = {};
+      if (token) headers["Authorization"] = `Bearer ${token}`;
+      return fetch(`${API_BASE}/lotteries`, {
+        method: "POST",
+        body: payload,
+        headers,
+      }).then(async (res) => {
+        const text = await res.text();
+        let json = null;
+        try {
+          json = text ? JSON.parse(text) : null;
+        } catch (e) {
+          json = text;
+        }
+        if (!res.ok) throw { status: res.status, body: json };
+        return json;
+      });
+    }
+    return request("/lotteries", {
+      method: "POST",
+      body: JSON.stringify(payload),
+    });
+  },
+  update: (id: string, payload: any) =>
+    request(`/lotteries/${id}`, {
+      method: "PUT",
+      body: JSON.stringify(payload),
+    }),
   buy: (id: string, payload: any) =>
     request(`/lotteries/${id}/tickets`, {
       method: "POST",
@@ -120,7 +155,11 @@ export const lotteries = {
     const all = await request("/lotteries", { method: "GET" });
     if (!Array.isArray(all)) return all;
     // normalize backend _id to id for frontend convenience
-    return all.map((l: any) => ({ ...l, id: String(l.id || l._id) }));
+    return all.map((l: any) => ({
+      ...l,
+      id: String(l.id || l._id),
+      status: normalizeStatus(l.status),
+    }));
   },
   get: (id: string) => request(`/lotteries/${id}`, { method: "GET" }),
   // winners API

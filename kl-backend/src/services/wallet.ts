@@ -24,6 +24,10 @@ export async function applyTransaction(options: {
     const user = await User.findById(userId).session(session);
     if (!user) throw new Error("User not found");
 
+    console.log(
+      `applyTransaction: starting for user=${userId} type=${type} amount=${amount} currBalance=${user.balance || 0} existingTxId=${existingTxId || "none"}`
+    );
+
     const curr = user.balance || 0;
     let next = curr;
     // debit for withdraw/purchase, credit for deposit/refund
@@ -37,6 +41,10 @@ export async function applyTransaction(options: {
     user.balance = next;
     await user.save({ session });
 
+    console.log(
+      `applyTransaction: user balance updated for user=${userId} -> nextBalance=${next}`
+    );
+
     let tx: any = null;
     if (existingTxId) {
       tx = await Transaction.findById(existingTxId).session(session);
@@ -44,6 +52,9 @@ export async function applyTransaction(options: {
       tx.balanceAfter = next;
       tx.status = "completed";
       await tx.save({ session });
+      console.log(
+        `applyTransaction: existing tx ${existingTxId} updated -> status=completed balanceAfter=${tx.balanceAfter}`
+      );
     } else {
       const created = await Transaction.create(
         [
@@ -59,6 +70,9 @@ export async function applyTransaction(options: {
         { session }
       );
       tx = created[0];
+      console.log(
+        `applyTransaction: created tx ${tx._id} status=${tx.status} balanceAfter=${tx.balanceAfter}`
+      );
     }
 
     let result: any = undefined;

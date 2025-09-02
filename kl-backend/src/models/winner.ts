@@ -28,6 +28,7 @@ const WinnerSchema: Schema<IWinnerDoc> = new Schema(
         name: String,
         phone: String,
         registeredAt: Date,
+        winnerRank: Number,
       },
     ],
     createdBy: { type: mongoose.Schema.Types.ObjectId, ref: "User" },
